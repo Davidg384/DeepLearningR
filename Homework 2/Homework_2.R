@@ -3,7 +3,7 @@ library (dplyr)
 library (rsample)
 library (recipes)
 
-Mydata_raw <- read.csv(file="C:/Users/chan7/Desktop/Spring 2019/BUS 386/housing.csv", header=TRUE, sep=",")
+Mydata_raw <- read.csv(file="~/github/DeepLearningR/Homework 2/housing.csv", header=TRUE, sep=",")
 
 Mydata <- Mydata_raw %>%
   select(median_house_value, everything())
@@ -37,9 +37,10 @@ y_train <- Train_tbl[,1]
 y_test <- Test_tbl[,1]
 
 model <- keras_model_sequential() %>%
-  layer_dense(units = 256, activation = "linear", input_shape = ncol(x_train_tbl)) %>%
-  layer_dense(units = 128, activation = "linear") %>%
-  layer_dense(units = 128, activation = "linear") %>%
+  layer_dense(units = 256, activation = "selu", input_shape = ncol(x_train_tbl)) %>%
+  layer_dense(units = 128, activation = "relu") %>%
+  layer_dense(units = 128, activation = "relu") %>%
+  layer_dense(units = 128, activation = "relu") %>%
   layer_dense(units = 1)
 
 model %>% compile(
@@ -51,8 +52,8 @@ model %>% compile(
 history <- model %>% fit(
   as.matrix(x_train_tbl), y_train,
   validation_split = .2,
-  epochs = 10,
-  batch_size = 128
+  epochs = 18,
+  batch_size = 32
 )
 
 plot(history)
