@@ -38,8 +38,11 @@ y_test <- Test_tbl[,1]
 
 model <- keras_model_sequential() %>%
   layer_dense(units = 256, activation = "selu", input_shape = ncol(x_train_tbl)) %>%
+  layer_dropout(rate=0.4) %>% 
   layer_dense(units = 128, activation = "relu") %>%
+  layer_dropout(rate=0.4) %>% 
   layer_dense(units = 128, activation = "relu") %>%
+  layer_dropout(rate=0.4) %>% 
   layer_dense(units = 128, activation = "relu") %>%
   layer_dense(units = 1)
 
@@ -52,8 +55,8 @@ model %>% compile(
 history <- model %>% fit(
   as.matrix(x_train_tbl), y_train,
   validation_split = .2,
-  epochs = 18,
-  batch_size = 32
+  epochs = 36,
+  batch_size = 16
 )
 
 plot(history)
