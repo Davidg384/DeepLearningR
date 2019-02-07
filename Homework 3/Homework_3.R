@@ -5,7 +5,8 @@ library(DataExplorer)
 library(tidyverse)
 library (recipes)
 
-Mydata_raw <- read.csv(file="~/github/DeepLearningR/Homework 3/supersym.csv", header=TRUE, sep=",")
+Mydata_raw <- read.csv(file="E:/DeepLearningDataSets/supersym.csv", header=TRUE, sep=",")
+#                            ^ ^ ^ link to supersym.csv
 
 glimpse(Mydata[,1])
 
@@ -14,7 +15,7 @@ Mydata <- Mydata_raw %>%
 
 #plot_missing(Mydata_raw)
 
-dim(Train_1)
+#(Train_1)
 
 rec_obj <- recipe(target ~ ., data = Mydata) %>%
   step_center(all_numeric(), -all_outcomes()) %>%
@@ -58,7 +59,7 @@ model1 %>% compile(
 history1 <- model1 %>% fit(
   as.matrix(Train_1), y_1train,
   validation_split = .2,
-  epochs = 10,
+  epochs = 5,
   batch_size = 256
 )
 
@@ -83,7 +84,7 @@ model2 %>% compile(
 history2 <- model2 %>% fit(
   as.matrix(Train_2), y_2train,
   validation_split = .2,
-  epochs = 10,
+  epochs = 5,
   batch_size = 256
 )
 
@@ -108,7 +109,7 @@ model3 %>% compile(
 history3 <- model3 %>% fit(
   as.matrix(Train_1), y_1train,
   validation_split = .2,
-  epochs = 10,
+  epochs = 5,
   batch_size = 256
 )
 
@@ -133,7 +134,7 @@ model4 %>% compile(
 history4 <- model4 %>% fit(
   as.matrix(Train_4), y_4train,
   validation_split = .2,
-  epochs = 10,
+  epochs = 5,
   batch_size = 256
 )
 
