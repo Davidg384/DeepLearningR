@@ -5,6 +5,13 @@ library(DataExplorer)
 library(tidyverse)
 library (recipes)
 
+Mydata_raw <- read.csv(file="~/github/DeepLearningR/Homework 3/supersym.csv", header=TRUE, sep=",")
+
+glimpse(Mydata[,1])
+
+Mydata <- Mydata_raw %>%
+  select(target, everything())
+
 # Imports raw data
 Mydata_raw <- read.csv(file="E:/DeepLearningDataSets/supersym.csv", header=TRUE, sep=",")
 #                            ^ ^ ^ link to supersym.csv
@@ -23,6 +30,10 @@ rec_obj <- recipe(target ~ ., data = Mydata) %>%
   step_scale(all_numeric(), -all_outcomes()) %>%
   prep(data = Mydata)
 
+#rec_obj
+
+MybakedData <- bake(rec_obj, new_data = Mydata) %>% select(-target)
+
 # Create new dataset from recipe
 MybakedData <- bake(rec_obj, new_data = Mydata) %>% select(-target)
 
@@ -31,6 +42,7 @@ Train_1 <- MybakedData[1:250000,]
 Train_2 <- MybakedData[250001:500000,]
 Train_3 <- MybakedData[500001:750000,]
 Train_4 <- MybakedData[750001:999999,]
+
 
 # Response Variables for each training set 
 y_1train <- Mydata[1:250000,1]
@@ -41,6 +53,7 @@ y_4train <- Mydata[750001:999999,1]
 dim(Train_1)
 dim(y_1train)
 dim(Mydata[,1])
+
 
 # Makes sequential Network for Dataset 1
 model1 <- keras_model_sequential() %>%
@@ -53,11 +66,19 @@ model1 <- keras_model_sequential() %>%
   #layer_dense(units = 128, activation = "relu") %>%
   layer_dense(units = 1, activation = "sigmoid")
 
+
 # Sets optimizer, loss, and metrics for model1
 model1 %>% compile(
   optimizer = "Adam",
   loss = "binary_crossentropy",
   metrics = c("accuracy")
+)
+
+history1 <- model1 %>% fit(
+  as.matrix(Train_1), y_1train,
+  validation_split = .2,
+  epochs = 10,
+  batch_size = 256
 )
 
 # Runs (fit) the model and stores plottable info
@@ -140,7 +161,7 @@ model4 %>% compile(
 history4 <- model4 %>% fit(
   as.matrix(Train_4), y_4train,
   validation_split = .2,
-  epochs = 5,
+  epochs = 10,
   batch_size = 256
 )
 
