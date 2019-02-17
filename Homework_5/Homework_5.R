@@ -1,6 +1,6 @@
 library(keras)
 
-mnist <- dataset_mnist()
+mnist <- dataset_fashion_mnist()
 c(c(train_images, train_labels), c(test_images, test_labels)) %<-% mnist
 
 train_images <- array_reshape(train_images, c(60000, 28, 28, 1))
@@ -9,34 +9,44 @@ test_images <- array_reshape(test_images, c(10000, 28, 28, 1))
 train_images <- train_images / 255
 test_images <- test_images / 255
 
-train_labels <- to_categorical(train_labels)
-test_labels <- to_categorical(test_labels)
+train_labels <- to_categorical(train_labels, num_classes = 11)
+test_labels <- to_categorical(test_labels, num_classes = 11)
 
 model <- keras_model_sequential() %>%
-  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = "relu",input_shape = c(28, 28, 1)) %>%
+  layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = "selu",input_shape = c(28, 28, 1)) %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
-  layer_conv_2d(filters = 64, kernel_size = c(3, 3), activation = "relu") %>%
+  layer_dropout(rate = 0.4) %>% 
+  layer_conv_2d(filters = 64, kernel_size = c(3, 3), activation = "selu") %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
-  layer_conv_2d(filters = 64, kernel_size = c(3, 3), activation = "relu")
+  layer_dropout(rate = 0.4) %>% 
+  layer_conv_2d(filters = 64, kernel_size = c(3, 3), activation = "selu")
+  layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+  layer_dropout(rate = 0.4) %>% 
+  layer_conv_2d(filters = 100, kernel_size = c(3, 3), activation = "selu") %>% 
+  layer_max_pooling_2d(pool_size = c(2, 2))
 
-model
+#model
 
 model <- model %>%
   layer_flatten() %>%
+  layer_dense(units = 128, activation = "relu") %>%
+  layer_dropout(rate = 0.4) %>% 
   layer_dense(units = 64, activation = "relu") %>%
-  layer_dense(units = 10, activation = "softmax")
+  layer_dropout(rate = 0.4) %>% 
+  layer_dense(units = 32, activation = "relu", regularizer_l1_l2(l1 = 0.01, l2 = 0.01)) %>%
+  layer_dense(units = 11, activation = "softmax")
 
-model
+#model
 
 model %>% compile(
-  optimizer = "rmsprop",
+  optimizer = "Adadelta",
   loss = "categorical_crossentropy",
   metrics = c("accuracy")
 )
 
 model %>% fit(
   train_images, train_labels,
-  epochs = 5, batch_size=64
+  epochs = 10, batch_size=64, validation_split = 0.2
 )
 
 results <- model %>% evaluate(test_images, test_labels)
