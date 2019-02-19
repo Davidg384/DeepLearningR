@@ -14,26 +14,24 @@ test_labels <- to_categorical(test_labels, num_classes = 11)
 
 model <- keras_model_sequential() %>%
   layer_conv_2d(filters = 32, kernel_size = c(3, 3), activation = "selu",input_shape = c(28, 28, 1)) %>%
-  layer_max_pooling_2d(pool_size = c(2, 2)) %>%
-  layer_dropout(rate = 0.4) %>% 
+  #layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+  #layer_dropout(rate = 0.4) %>% 
   layer_conv_2d(filters = 64, kernel_size = c(3, 3), activation = "selu") %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
   layer_dropout(rate = 0.4) %>% 
-  layer_conv_2d(filters = 64, kernel_size = c(3, 3), activation = "selu")
+  layer_conv_2d(filters = 96, kernel_size = c(3, 3), activation = "selu")
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
   layer_dropout(rate = 0.4) %>% 
-  layer_conv_2d(filters = 100, kernel_size = c(3, 3), activation = "selu") %>% 
+  layer_conv_2d(filters = 128, kernel_size = c(3, 3), activation = "selu") %>% 
   layer_max_pooling_2d(pool_size = c(2, 2))
 
 #model
 
 model <- model %>%
   layer_flatten() %>%
-  layer_dense(units = 128, activation = "relu") %>%
+  layer_dense(units = 256, activation = "selu") %>%
   layer_dropout(rate = 0.4) %>% 
-  layer_dense(units = 64, activation = "relu") %>%
-  layer_dropout(rate = 0.4) %>% 
-  layer_dense(units = 32, activation = "relu", regularizer_l1_l2(l1 = 0.01, l2 = 0.01)) %>%
+  #layer_dense(units = 64, activation = "selu") %>%
   layer_dense(units = 11, activation = "softmax")
 
 #model
@@ -48,6 +46,9 @@ model %>% fit(
   train_images, train_labels,
   epochs = 10, batch_size=64, validation_split = 0.2
 )
+
+model %>% save_model_hdf5("~/github/DeepLearningR/MNist_Fashion_91.h5")
+
 
 results <- model %>% evaluate(test_images, test_labels)
 results
