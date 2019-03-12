@@ -1,6 +1,6 @@
 library(keras)
 
-base_dir <- "~/Desktop/2019/RScripts/Deep Learning/fruits-360"
+base_dir <- "~/Scripts/R/Deep Learning/Data/fruits-360"
 train_dir <- file.path(base_dir, "Training")
 #validation_dir <- file.path(base_dir, "Test")
 test_dir <- file.path(base_dir, "Test")
@@ -31,7 +31,7 @@ validation_generator <- flow_images_from_directory(
   test_datagen,
   target_size = c(20, 20),
   batch_size = 20,
-  class_mode = "binary"
+  class_mode = "categorical"
 )
 
 model <- keras_model_sequential() %>%
@@ -41,8 +41,8 @@ model <- keras_model_sequential() %>%
   layer_conv_2d(filters = 64, kernel_size = c(3, 3), activation = "selu") %>%
   layer_max_pooling_2d(pool_size = c(2, 2)) %>%
   layer_dropout(rate = 0.4) %>% 
-  layer_conv_2d(filters = 96, kernel_size = c(3, 3), activation = "selu")
-layer_max_pooling_2d(pool_size = c(2, 2)) %>%
+  layer_conv_2d(filters = 96, kernel_size = c(3, 3), activation = "selu") %>% 
+  #layer_max_pooling_2d(pool_size = c(2, 2)) %>%
   layer_dropout(rate = 0.4) %>% 
   layer_conv_2d(filters = 128, kernel_size = c(3, 3), activation = "selu") %>% 
   layer_max_pooling_2d(pool_size = c(2, 2))
@@ -51,14 +51,14 @@ layer_max_pooling_2d(pool_size = c(2, 2)) %>%
 
 model <- model %>%
   layer_flatten() %>%
-  layer_dense(units = 256, activation = "selu") %>%
+  layer_dense(units = 512, activation = "selu") %>%
   layer_dropout(rate = 0.4) %>% 
   #layer_dense(units = 64, activation = "selu") %>%
-  layer_dense(units = 24, activation = "softmax")
+  layer_dense(units = 10, activation = "softmax")
 
 
 model %>% compile(
-  optimizer = optimizer_rmsprop(lr = 2e-5),#"Adadelta",
+  optimizer = "Adadelta",#optimizer_rmsprop(lr = 2e-5),
   loss = "categorical_crossentropy",
   metrics = c("accuracy")
 )
@@ -67,16 +67,16 @@ model %>% compile(
 
 callbacks_list <- list(
   callback_early_stopping(monitor = "acc", patience = 5),
-  callback_model_checkpoint(filepath = "my_CP_model.h5", monitor ="val_loss", save_best_only = TRUE)
+  callback_model_checkpoint(filepath = "my_CP_model2.h5", monitor ="val_loss", save_best_only = TRUE)
 )
 
 history <- model %>% fit_generator(
   train_generator,
   steps_per_epoch = 100,
   callbacks = callbacks_list,
-  epochs = 60
-  #validation_data = validation_generator,
-  #validation_steps = 50
+  epochs = 60,
+  validation_data = validation_generator,
+  validation_steps = 50
 )
 
 plot(history)

@@ -32,7 +32,7 @@ test_images <- test_images / 255
 # Categorize labels & add extra category
 train_labels <- to_categorical(train_labels, num_classes = 11)#ONE-Hot encoding
 test_labels <- to_categorical(test_labels, num_classes = 11)
-
+dim(train_labels)
 # Build the model
 network <- keras_model_sequential() %>%
   layer_dense(units = 16, activation = "relu", initializer_he_normal(), input_shape = c(28 * 28)) %>%
@@ -48,5 +48,9 @@ network %>% compile(
 network
 
 # Train the model
-network %>% fit(train_images, train_labels, epochs = 10, batch_size = 256, validation_split = 0.2)
+network %>% fit(train_images, 
+                train_labels, 
+                epochs = 10,
+                batch_size = 256,
+                validation_split = 0.2)
  
