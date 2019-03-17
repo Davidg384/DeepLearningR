@@ -1,13 +1,14 @@
 library(keras)
 
+# create base for convolutional network (pre-trained)
 conv_base <- application_vgg19(
-  weights = "imagenet",
+  weights = "C:/Users/David/scripts/R/DeepLearningR/Homework_6_7_8/vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5", # imagenet
   include_top = FALSE,
   input_shape = c(100, 100, 3)
 )
 
 freeze_weights(conv_base)
-unfreeze_weights(conv_base, from = 3)
+unfreeze_weights(conv_base, from = "block5_conv4")
 
 model <- keras_model_sequential() %>%
   conv_base %>%
@@ -16,13 +17,13 @@ model <- keras_model_sequential() %>%
   layer_dense(units = 10, activation = "softmax")
 
 
-base_dir <- "~/Scripts/R/Deep Learning/Data/FacRec"
+base_dir <- "D:/DataSets/FacRec"
 train_dir <- file.path(base_dir, "Training")
 #validation_dir <- file.path(base_dir, "validation")
 test_dir <- file.path(base_dir, "Test")
 
-train_datagen = image_data_generator(
-  seed=1766,
+train_datagen <- image_data_generator(
+#  seed=1766,
   rescale = 1/255,
   rotation_range = 40,
   width_shift_range = 0.2,
@@ -43,6 +44,7 @@ train_generator <- flow_images_from_directory(
   class_mode = "categorical"
 )
 
+# Used to test model
 validation_generator <- flow_images_from_directory(
   test_dir,
   test_datagen,
@@ -61,7 +63,7 @@ model %>% compile(
 
 callbacks_list <- list(
   callback_early_stopping(monitor = "acc", patience = 3),
-  callback_model_checkpoint(filepath = "~/Scripts/R/Deep Learning/my_faceRec_model1.h5", monitor ="val_loss", save_best_only = TRUE)
+  callback_model_checkpoint(filepath = "~/../scripts/R/DeepLearningR/my_faceRec_model1.h5", monitor ="val_loss", save_best_only = TRUE)
 )
 
 history <- model %>% fit_generator(

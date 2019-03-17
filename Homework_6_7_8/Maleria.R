@@ -12,11 +12,11 @@ unfreeze_weights(conv_base, from = "block6_sepconv1_act")
 model <- keras_model_sequential() %>%
   conv_base %>%
   layer_flatten() %>%
-  layer_dense(units = 256, activation = "selu") %>%
+  layer_dense(units = 128, activation = "selu") %>%
   layer_dense(units = 1, activation = "sigmoid")
 
 
-base_dir <- "~/Scripts/R/Deep Learning/Data/Malaria Detection"
+base_dir <- "D:/DataSets/Malaria Detection"
 train_dir <- file.path(base_dir, "Train")
 validation_dir <- file.path(base_dir, "valid")
 test_dir <- file.path(base_dir, "Test")
@@ -60,7 +60,7 @@ model %>% compile(
 
 callbacks_list <- list(
   callback_early_stopping(monitor = "acc", patience = 3),
-  callback_model_checkpoint(filepath = "~/Scripts/R/Deep Learning/my_MalRec_model1.h5", monitor ="val_loss", save_best_only = TRUE)
+  callback_model_checkpoint(filepath = "~/../scripts/R/DeepLearningR/my_MalRec_model1.h5", monitor ="val_loss", save_best_only = TRUE)
 )
 
 history <- model %>% fit_generator(
@@ -72,4 +72,5 @@ history <- model %>% fit_generator(
   validation_steps = 20
 )
 
-model %>% evaluate_generator(generator=test_datagen, steps = 20)
+#Tests accuracy of neural net
+model %>% evaluate_generator(generator=validation_generator, steps = 20)
