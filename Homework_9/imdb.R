@@ -41,4 +41,3 @@ history <- model %>% fit(
 )
 
 plot(history)
-
