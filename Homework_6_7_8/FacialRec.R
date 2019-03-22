@@ -2,7 +2,7 @@ library(keras)
 
 # create base for convolutional network (pre-trained)
 conv_base <- application_vgg19(
-  weights = "C:/Users/David/scripts/R/DeepLearningR/Homework_6_7_8/vgg19_weights_tf_dim_ordering_tf_kernels_notop.h5", # imagenet
+  weights = "imagenet", # imagenet
   include_top = FALSE,
   input_shape = c(100, 100, 3)
 )
@@ -17,7 +17,7 @@ model <- keras_model_sequential() %>%
   layer_dense(units = 10, activation = "softmax")
 
 
-base_dir <- "D:/DataSets/FacRec"
+base_dir <- "/media/david/Transcend/DataSets/ConvolutionalSets/FacRec"
 train_dir <- file.path(base_dir, "Training")
 #validation_dir <- file.path(base_dir, "validation")
 test_dir <- file.path(base_dir, "Test")
@@ -63,7 +63,7 @@ model %>% compile(
 
 callbacks_list <- list(
   callback_early_stopping(monitor = "acc", patience = 3),
-  callback_model_checkpoint(filepath = "~/../scripts/R/DeepLearningR/my_faceRec_model1.h5", monitor ="val_loss", save_best_only = TRUE)
+  callback_model_checkpoint(filepath = "~/scripts/R/DeepLearningR/my_faceRec_model1.h5", monitor ="val_loss", save_best_only = TRUE)
 )
 
 history <- model %>% fit_generator(
