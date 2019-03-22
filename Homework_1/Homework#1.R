@@ -35,8 +35,10 @@ test_labels <- to_categorical(test_labels, num_classes = 11)
 dim(train_labels)
 # Build the model
 network <- keras_model_sequential() %>%
-  layer_dense(units = 16, activation = "relu", initializer_he_normal(), input_shape = c(28 * 28)) %>%
-  layer_dense(units = 16, activation = "relu", initializer_he_normal()) %>%
+  layer_dense(units = 128, activation = "relu", initializer_he_normal(), input_shape = c(28 * 28)) %>%
+  layer_dense(units = 64, activation = "relu") %>%
+  layer_dense(units = 32, activation = "relu") %>%
+  layer_dense(units = 16, activation = "relu") %>%
   layer_dense(units = 11, activation = "softmax")
 
 network %>% compile(
