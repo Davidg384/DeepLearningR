@@ -53,14 +53,16 @@ history <- model %>% fit(
   batch_size = batch_size,
   epochs = epochs,
   verbose = 1,
-  validation_split = 0.1
+  validation_split = 0.2
 )
-
+plot(history)
 score <- model %>% evaluate(
   x_test, y_test,
   batch_size = batch_size,
   verbose = 1
 )
+
+
 
 cat('Test score:', score[[1]], '\n')
 cat('Test accuracy', score[[2]], '\n')
