@@ -1,3 +1,4 @@
+# Convolutional Net for fruit classification
 library(keras)
 
 base_dir <- "~/Scripts/R/Deep Learning/Data/fruits-360"
